@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasks/dto/create_task_dto.dart';
 import 'package:tasks/dto/list_update_dto.dart';
+import 'package:tasks/models/list_holder.dart';
 
 import 'package:tasks/providers/auth.dart';
 import 'package:tasks/services/lists_service.dart';
@@ -24,10 +25,11 @@ class Tasks with ChangeNotifier {
 
   bool _isLoading = false;
   bool _showCompleted = true;
-  TaskList _selectedList;
-  List<TaskList> _taskLists = [];
-  List<Task> _tasks = [];
 
+  List<TaskList> _allLists = [];
+  TaskList _selectedList;
+
+  List<Task> _allTasks = [];
   List<Task> _selectedTasks = [];
 
   Tasks({@required this.authProvider}) {
@@ -49,9 +51,24 @@ class Tasks with ChangeNotifier {
   List<TaskList> get taskLists {
     List<TaskList> lists = [];
     lists.add(
-      new TaskList(id: -1, title: 'Important'),
+      new TaskList(
+        id: ListHolder.IMPORTANT,
+        title: 'Important',
+        taskCounter: _allTasks
+            .where((task) => task.important && task.status == 'OPEN')
+            .length,
+      ),
     );
-    lists.addAll(_taskLists);
+    lists.add(
+      new TaskList(
+        id: ListHolder.TASKS,
+        title: 'Tasks',
+        taskCounter: _allTasks
+            .where((task) => task.list == null && task.status == 'OPEN')
+            .length,
+      ),
+    );
+    lists.addAll(_allLists);
     return lists.toList();
   }
 
@@ -87,10 +104,22 @@ class Tasks with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Updates de selected list in the store.
+  /// Updates de selected list and tasks.
   void selectList(TaskList list) {
     _selectedList = list;
-    _selectedTasks = _tasks.where((task) => task.list?.id == list.id).toList();
+
+    switch (list.id) {
+      case ListHolder.IMPORTANT:
+        _selectedTasks = _getImportantTasks();
+        break;
+      case ListHolder.TASKS:
+        _selectedTasks = _getListlessTasks();
+        break;
+      default:
+        _selectedTasks =
+            _allTasks.where((task) => task.list?.id == list.id).toList();
+    }
+
     notifyListeners();
   }
 
@@ -99,10 +128,14 @@ class Tasks with ChangeNotifier {
     try {
       _initChanges();
 
-      final lists = await listsService.find();
       final tasks = await tasksService.find();
-      _taskLists = lists;
-      _tasks = tasks;
+      _allTasks = tasks;
+
+      final lists = await listsService.find();
+      for (var list in lists) {
+        list.taskCounter = _getTaskListCounter(list);
+      }
+      _allLists = lists;
     } catch (e) {
       if (e is SocketException) {
         throw SocketException('Server seems to be down.');
@@ -112,13 +145,24 @@ class Tasks with ChangeNotifier {
     }
   }
 
+  List<Task> _getTasksByList(TaskList list) {
+    return _allTasks.where((task) => task.list?.id == list.id).toList();
+  }
+
+  int _getTaskListCounter(TaskList list) {
+    return _getTasksByList(list)
+        .where((task) => task.status == 'OPEN')
+        .toList()
+        .length;
+  }
+
   /// Add a new list.
   ///
   /// The new list will be added in the store and then selected.
   Future<void> addList(String title) async {
     // Create the new list and update the store
     final createdList = await listsService.create(new TaskList(title: title));
-    _taskLists.add(createdList);
+    _allLists.add(createdList);
 
     // Select the newly created list
     selectList(createdList);
@@ -130,7 +174,7 @@ class Tasks with ChangeNotifier {
   /// Deletes a list through the API and update the store.
   Future<void> deleteList() async {
     await listsService.delete(selectedList.id);
-    _taskLists.removeWhere((it) => it.id == selectedList.id);
+    _allLists.removeWhere((it) => it.id == selectedList.id);
 
     _endChanges();
     return true;
@@ -144,7 +188,7 @@ class Tasks with ChangeNotifier {
       new TaskListUpdateDto(id: selectedList.id, title: title),
     );
 
-    _taskLists[_taskLists.indexWhere((list) => list.id == updatedList.id)] =
+    _allLists[_allLists.indexWhere((list) => list.id == updatedList.id)] =
         updatedList;
 
     selectList(updatedList);
@@ -153,23 +197,24 @@ class Tasks with ChangeNotifier {
     return updatedList;
   }
 
-  // List<Task> _getImportantTasks() {
-  //   final List<Task> tasks = _tasks.where((task) => task.important).toList();
+  List<Task> _getImportantTasks() {
+    final List<Task> tasks = _allTasks.where((task) => task.important).toList();
 
-  //   tasks.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
-  //   tasks.sort((a, b) => a.important ? 0 : 1);
-  //   tasks.sort((a, b) => a.status == 'DONE' ? 1 : 0);
-  //   return tasks;
-  // }
+    tasks.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
+    tasks.sort((a, b) => a.important ? 0 : 1);
+    tasks.sort((a, b) => a.status == 'DONE' ? 1 : 0);
+    return tasks;
+  }
 
-  // List<Task> _getListlessTasks() {
-  //   final List<Task> tasks = _tasks.where((task) => task.list == null).toList();
+  List<Task> _getListlessTasks() {
+    final List<Task> tasks =
+        _allTasks.where((task) => task.list == null).toList();
 
-  //   tasks.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
-  //   tasks.sort((a, b) => a.important ? 0 : 1);
-  //   tasks.sort((a, b) => a.status == 'DONE' ? 1 : 0);
-  //   return tasks;
-  // }
+    tasks.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
+    tasks.sort((a, b) => a.important ? 0 : 1);
+    tasks.sort((a, b) => a.status == 'DONE' ? 1 : 0);
+    return tasks;
+  }
 
   /// Loads user preference on showing completed tasks on lists.
   _setShowCompleted() async {
@@ -206,8 +251,10 @@ class Tasks with ChangeNotifier {
     final createdTask = await tasksService.create(
       new CreateTaskDto(title: task.title, listId: selectedList.id),
     );
-    _tasks.add(createdTask);
+    _allTasks.add(createdTask);
     _selectedTasks.add(createdTask);
+
+    _incrementListCounter(task);
 
     _endChanges();
   }
@@ -219,34 +266,73 @@ class Tasks with ChangeNotifier {
       task.status == 'OPEN' ? 'DONE' : 'OPEN',
     );
 
-    final tasks = _tasks;
+    final tasks = _allTasks;
     final index = tasks.indexWhere((it) => it.id == task.id);
     tasks[index] = updatedTask;
 
-    // if (selectedList.id == -1) {
-    //   // Update tasks on main list
-    //   // Important list is just a fake placeholder
-    //   final ownerList = _findByTask(task);
-    //   final ownerIndex = _taskLists.indexWhere((it) => it.id == ownerList.id);
-    //   final ownerTaskIndex = ownerList.tasks.indexWhere(
-    //     (it) => it.id == task.id,
-    //   );
-    //   ownerList.tasks[ownerTaskIndex] = updatedTask;
-    //   _taskLists[ownerIndex] = ownerList;
-    // }
+    _updateSelectedTasks();
+
+    // update list counter
+    if (task.status == 'OPEN') {
+      _decrementListCounter(task);
+    } else {
+      _incrementListCounter(task);
+    }
 
     _endChanges();
     return updatedTask;
   }
 
-  // TaskList _findByTask(Task task) {
-  //   for (var list in _taskLists) {
-  //     if (_tasks.indexWhere((it) => it.id == task.id) > -1) {
-  //       return list;
-  //     }
-  //   }
-  //   return null;
-  // }
+  _decrementListCounter(Task task) {
+    switch (selectedList.id) {
+      case ListHolder.IMPORTANT:
+        if (task.list != null) {
+          taskLists.firstWhere((list) => list.id == task.list.id).taskCounter--;
+        } else {
+          taskLists
+              .firstWhere((list) => list.id == ListHolder.TASKS)
+              .taskCounter--;
+        }
+        break;
+      case ListHolder.TASKS:
+        selectedList.taskCounter--;
+        break;
+      default:
+        _allLists.firstWhere((list) => list.id == task.list.id).taskCounter--;
+    }
+  }
+
+  _incrementListCounter(Task task) {
+    switch (selectedList.id) {
+      case ListHolder.IMPORTANT:
+        if (task.list != null) {
+          taskLists.firstWhere((list) => list.id == task.list.id).taskCounter++;
+        } else {
+          taskLists
+              .firstWhere((list) => list.id == ListHolder.TASKS)
+              .taskCounter++;
+        }
+        break;
+      case ListHolder.TASKS:
+        selectedList.taskCounter++;
+        break;
+      default:
+        _allLists.firstWhere((list) => list.id == task.list?.id).taskCounter++;
+    }
+  }
+
+  _updateSelectedTasks() {
+    switch (selectedList.id) {
+      case ListHolder.IMPORTANT:
+        _selectedTasks = _getImportantTasks();
+        break;
+      case ListHolder.TASKS:
+        _selectedTasks = _getListlessTasks();
+        break;
+      default:
+        _selectedTasks = _getTasksByList(selectedList);
+    }
+  }
 
   /// Updates [task] important through the API and updates the store.
   Future<Task> updateTaskImportant(Task task) async {
@@ -255,22 +341,11 @@ class Tasks with ChangeNotifier {
       task.important ? false : true,
     );
 
-    final tasks = _tasks;
+    final tasks = _allTasks;
     final index = tasks.indexWhere((it) => it.id == task.id);
     tasks[index] = updatedTask;
 
-    // Remove task from important and update owner list
-    // if (selectedList.id == -1) {
-    //   _tasks.removeWhere((it) => it.id == task.id);
-
-    //   final ownerList = _findByTask(task);
-    //   final ownerIndex = _taskLists.indexWhere((it) => it.id == ownerList.id);
-    //   final ownerTaskIndex = ownerList.tasks.indexWhere(
-    //     (it) => it.id == task.id,
-    //   );
-    //   ownerList.tasks[ownerTaskIndex] = updatedTask;
-    //   _taskLists[ownerIndex] = ownerList;
-    // }
+    _updateSelectedTasks();
 
     _endChanges();
     return updatedTask;
@@ -278,13 +353,10 @@ class Tasks with ChangeNotifier {
 
   void deleteTask(Task task) async {
     await tasksService.delete(task.id);
-    _tasks.removeAt(_tasks.indexOf(task));
+    _allTasks.removeAt(_allTasks.indexOf(task));
+    _allLists.firstWhere((list) => list.id == task.list.id).taskCounter--;
 
-    // Remove the task from its original list
-    // if (selectedList.id == -1) {
-    //   final ownerList = _findByTask(task);
-    //   ownerList.tasks.removeAt(ownerList.tasks.indexOf(task));
-    // }
+    _updateSelectedTasks();
 
     _endChanges();
   }
@@ -294,8 +366,14 @@ class Tasks with ChangeNotifier {
     final listId = selectedList.id;
     final updatedList = await listsService.findById(listId);
 
-    final index = _taskLists.indexWhere((list) => list.id == listId);
-    _taskLists[index] = updatedList;
+    final index = _allLists.indexWhere((list) => list.id == listId);
+    _allLists[index] = updatedList;
+
+    // Update tasks
+    final uptatedTasks = await tasksService.find();
+    _allTasks = uptatedTasks;
+    _selectedTasks =
+        _allTasks.where((task) => task.list?.id == selectedList.id).toList();
 
     selectList(updatedList);
     _endChanges();

@@ -31,7 +31,18 @@ class TaskListWidget extends StatelessWidget {
   Widget _buildTaskList(List<TaskList> taskLists) {
     return ListView.builder(
       itemCount: taskLists.length,
-      itemBuilder: (context, index) => TaskListItem(list: taskLists[index]),
+      itemBuilder: (context, index) => index == 2
+          ? Container(
+              child: Column(
+              children: <Widget>[
+                Divider(
+                  indent: 16.0,
+                  endIndent: 16.0,
+                ),
+                TaskListItem(list: taskLists[index]),
+              ],
+            ))
+          : TaskListItem(list: taskLists[index]),
     );
   }
 

@@ -5,12 +5,14 @@ class TaskList {
   final String title;
   final DateTime createdAt;
   final DateTime updatedAt;
+  int taskCounter;
 
   TaskList({
     this.id,
     @required this.title,
     this.createdAt,
     this.updatedAt,
+    this.taskCounter,
   });
 
   factory TaskList.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class TaskList {
       title: json['title'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      taskCounter: 0,
     );
   }
 }

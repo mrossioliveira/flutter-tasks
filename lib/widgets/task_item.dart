@@ -149,16 +149,27 @@ class _TaskItemState extends State<TaskItem> {
   }
 
   _onStatusUpdate() async {
-    setState(() {
-      _updatingStatus = true;
-    });
-
-    await Provider.of<Tasks>(context, listen: false)
-        .updateTaskStatus(widget.task);
-
-    setState(() {
-      _updatingStatus = false;
-    });
+    try {
+      setState(() {
+        _updatingStatus = true;
+      });
+      await Provider.of<Tasks>(context, listen: false)
+          .updateTaskStatus(widget.task);
+    } catch (e) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to update status.',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _updatingStatus = false;
+      });
+    }
   }
 
   IconButton _buildTaskImportant(BuildContext context) {
