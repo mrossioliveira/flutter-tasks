@@ -19,7 +19,8 @@ class TaskList {
 
   factory TaskList.fromJson(Map<String, dynamic> json) {
     final jsonTasks = json['tasks'];
-    final tasks = jsonTasks.map<Task>((task) => Task.fromJson(task)).toList();
+    final List<Task> tasks =
+        jsonTasks.map<Task>((task) => Task.fromJson(task)).toList();
 
     return TaskList(
       id: json['id'],

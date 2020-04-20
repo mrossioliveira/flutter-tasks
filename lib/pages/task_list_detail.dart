@@ -48,6 +48,10 @@ class TaskListDetailPage extends StatelessWidget {
     );
   }
 
+  _onRefresh(BuildContext context) async {
+    Provider.of<Tasks>(context, listen: false).refreshSelectedList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final _listInputController = TextEditingController();
@@ -331,7 +335,8 @@ class TaskListDetailPage extends StatelessWidget {
           ],
         ),
       ).build(context),
-      body: _showTasks(context),
+      body: RefreshIndicator(
+          child: _showTasks(context), onRefresh: () => _onRefresh(context)),
     );
   }
 }

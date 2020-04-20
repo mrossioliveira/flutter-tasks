@@ -18,6 +18,32 @@ class TasksService extends UtilsService implements ITasksService {
   TasksService({@required this.authProvider});
 
   @override
+  Future<List<Task>> find() async {
+    final url = '${ApiUtils.JAVA_API}/tasks';
+
+    final response = await http.get(
+      url,
+      headers: getDefaultHeaders(authProvider),
+    );
+
+    final responseBody = handleJavaAPIResponse(response, HttpStatus.ok);
+    return responseBody
+        .map<Task>((jsonList) => Task.fromJson(jsonList))
+        .toList();
+  }
+
+  @override
+  Future<List<Task>> findImportant() async {
+    final tasks = await find();
+    return tasks.where((task) => task.important);
+  }
+
+  @override
+  Future<List<Task>> findListless() {
+    return null;
+  }
+
+  @override
   Future<Task> create(CreateTaskDto createTaskDto) async {
     final url = '${ApiUtils.NODE_API}/tasks';
 

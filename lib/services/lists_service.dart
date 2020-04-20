@@ -21,13 +21,28 @@ class ListsService extends UtilsService implements IListsService {
   Future<List<TaskList>> find() async {
     final url = '${ApiUtils.JAVA_API}/lists';
 
-    final response =
-        await http.get(url, headers: getDefaultHeaders(authProvider));
+    final response = await http.get(
+      url,
+      headers: getDefaultHeaders(authProvider),
+    );
 
     final responseBody = handleJavaAPIResponse(response, HttpStatus.ok);
     return responseBody
-        .map<TaskList>((jsonTask) => TaskList.fromJson(jsonTask))
+        .map<TaskList>((jsonList) => TaskList.fromJson(jsonList))
         .toList();
+  }
+
+  @override
+  Future<TaskList> findById(int id) async {
+    final url = '${ApiUtils.JAVA_API}/lists/$id';
+
+    final response = await http.get(
+      url,
+      headers: getDefaultHeaders(authProvider),
+    );
+
+    final responseBody = handleJavaAPIResponse(response, HttpStatus.ok);
+    return TaskList.fromJson(responseBody);
   }
 
   /// Add a new list through the API.

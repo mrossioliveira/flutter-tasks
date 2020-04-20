@@ -1,3 +1,5 @@
+import 'package:tasks/models/list.dart';
+
 class Task {
   final int id;
   final String title;
@@ -6,15 +8,18 @@ class Task {
   final bool important;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final TaskList list;
 
-  Task(
-      {this.id,
-      this.title,
-      this.description,
-      this.status,
-      this.important,
-      this.createdAt,
-      this.updatedAt});
+  Task({
+    this.id,
+    this.title,
+    this.description,
+    this.status,
+    this.important,
+    this.createdAt,
+    this.updatedAt,
+    this.list,
+  });
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(

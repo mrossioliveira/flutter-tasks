@@ -35,75 +35,89 @@ class HomePage extends StatelessWidget {
             )
           ],
         ),
-        body: Container(child: TaskListWidget()),
+        body: RefreshIndicator(
+          onRefresh: () => _onRefresh(context),
+          child: Container(
+            child: TaskListWidget(),
+          ),
+          color: Theme.of(context).primaryColor,
+        ),
         floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add, color: Colors.white),
-            backgroundColor: Theme.of(context).primaryColor,
-            onPressed: () {
-              showDialog(
-                barrierDismissible: false,
-                useRootNavigator: true,
-                context: context,
-                child: new SimpleDialog(
-                  contentPadding: EdgeInsets.all(0),
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.all(8.0),
-                      child: Column(
-                        children: <Widget>[
-                          TextField(
-                            controller: _listInputController,
-                            autofocus: true,
-                            decoration: InputDecoration(
-                              hintText: 'Enter list title',
-                            ),
+          child: Icon(Icons.add, color: Colors.white),
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            showDialog(
+              barrierDismissible: false,
+              useRootNavigator: true,
+              context: context,
+              child: new SimpleDialog(
+                contentPadding: EdgeInsets.all(0),
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      children: <Widget>[
+                        TextField(
+                          controller: _listInputController,
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            hintText: 'Enter list title',
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              FlatButton(
-                                child: Text(
-                                  'Cancel',
-                                  style: TEXT_BODY_LIGHT,
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            FlatButton(
+                              child: Text(
+                                'Cancel',
+                                style: TEXT_BODY_LIGHT,
                               ),
-                              FlatButton(
-                                color: Theme.of(context).primaryColor,
-                                child: Text(
-                                  'Create',
-                                  style: TEXT_BODY_WHITE,
-                                ),
-                                onPressed: () async {
-                                  await Provider.of<Tasks>(
-                                    context,
-                                    listen: false,
-                                  ).addList(_listInputController.text);
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            FlatButton(
+                              color: Theme.of(context).primaryColor,
+                              child: Text(
+                                'Create',
+                                style: TEXT_BODY_WHITE,
+                              ),
+                              onPressed: () async {
+                                await Provider.of<Tasks>(
+                                  context,
+                                  listen: false,
+                                ).addList(_listInputController.text);
 
-                                  Navigator.of(context).pop();
+                                Navigator.of(context).pop();
 
-                                  Navigator.of(context).push(
-                                    new MaterialPageRoute(
-                                      builder: (context) => TaskListDetailPage(
-                                        creating: false,
-                                      ),
+                                Navigator.of(context).push(
+                                  new MaterialPageRoute(
+                                    builder: (context) => TaskListDetailPage(
+                                      creating: false,
                                     ),
-                                  );
-                                },
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              );
-            }),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
+  }
+
+  _onRefresh(BuildContext context) async {
+    Provider.of<Tasks>(
+      context,
+      listen: false,
+    ).fetchAndRefresh();
   }
 
   _handleSearch() {
