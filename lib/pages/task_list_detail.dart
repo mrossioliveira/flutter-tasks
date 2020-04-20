@@ -30,9 +30,10 @@ class TaskListDetailPage extends StatelessWidget {
   }
 
   bool _hasTasks(TaskList taskList) {
-    if (taskList.tasks == null) {
-      return false;
-    }
+    // FIXME: Check for taks
+    // if (taskList.tasks == null) {
+    //   return false;
+    // }
     return true;
   }
 

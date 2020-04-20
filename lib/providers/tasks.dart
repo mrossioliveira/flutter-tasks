@@ -28,6 +28,8 @@ class Tasks with ChangeNotifier {
   List<TaskList> _taskLists = [];
   List<Task> _tasks = [];
 
+  List<Task> _selectedTasks = [];
+
   Tasks({@required this.authProvider}) {
     if (authProvider != null) {
       listsService = new ListsService(authProvider: authProvider);
@@ -47,7 +49,7 @@ class Tasks with ChangeNotifier {
   List<TaskList> get taskLists {
     List<TaskList> lists = [];
     lists.add(
-      new TaskList(id: -1, title: 'Important', tasks: _getImportantTasks()),
+      new TaskList(id: -1, title: 'Important'),
     );
     lists.addAll(_taskLists);
     return lists.toList();
@@ -66,7 +68,7 @@ class Tasks with ChangeNotifier {
   }
 
   List<Task> get tasks {
-    List<Task> tasks = _tasks;
+    List<Task> tasks = [..._selectedTasks];
 
     // Remove completed tasks
     if (!showCompleted) {
@@ -88,8 +90,7 @@ class Tasks with ChangeNotifier {
   /// Updates de selected list in the store.
   void selectList(TaskList list) {
     _selectedList = list;
-    _tasks = list.tasks;
-
+    _selectedTasks = _tasks.where((task) => task.list?.id == list.id).toList();
     notifyListeners();
   }
 
@@ -98,7 +99,7 @@ class Tasks with ChangeNotifier {
     try {
       _initChanges();
 
-      var lists = await listsService.find();
+      final lists = await listsService.find();
       final tasks = await tasksService.find();
       _taskLists = lists;
       _tasks = tasks;
@@ -152,23 +153,23 @@ class Tasks with ChangeNotifier {
     return updatedList;
   }
 
-  List<Task> _getImportantTasks() {
-    final List<Task> tasks = _tasks.where((task) => task.important).toList();
+  // List<Task> _getImportantTasks() {
+  //   final List<Task> tasks = _tasks.where((task) => task.important).toList();
 
-    tasks.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
-    tasks.sort((a, b) => a.important ? 0 : 1);
-    tasks.sort((a, b) => a.status == 'DONE' ? 1 : 0);
-    return tasks;
-  }
+  //   tasks.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
+  //   tasks.sort((a, b) => a.important ? 0 : 1);
+  //   tasks.sort((a, b) => a.status == 'DONE' ? 1 : 0);
+  //   return tasks;
+  // }
 
-  List<Task> _getListlessTasks() {
-    final List<Task> tasks = _tasks.where((task) => task.list == null).toList();
+  // List<Task> _getListlessTasks() {
+  //   final List<Task> tasks = _tasks.where((task) => task.list == null).toList();
 
-    tasks.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
-    tasks.sort((a, b) => a.important ? 0 : 1);
-    tasks.sort((a, b) => a.status == 'DONE' ? 1 : 0);
-    return tasks;
-  }
+  //   tasks.sort((a, b) => a.createdAt.isAfter(b.createdAt) ? 1 : 0);
+  //   tasks.sort((a, b) => a.important ? 0 : 1);
+  //   tasks.sort((a, b) => a.status == 'DONE' ? 1 : 0);
+  //   return tasks;
+  // }
 
   /// Loads user preference on showing completed tasks on lists.
   _setShowCompleted() async {
@@ -205,7 +206,8 @@ class Tasks with ChangeNotifier {
     final createdTask = await tasksService.create(
       new CreateTaskDto(title: task.title, listId: selectedList.id),
     );
-    selectedList.tasks.add(createdTask);
+    _tasks.add(createdTask);
+    _selectedTasks.add(createdTask);
 
     _endChanges();
   }
@@ -217,34 +219,34 @@ class Tasks with ChangeNotifier {
       task.status == 'OPEN' ? 'DONE' : 'OPEN',
     );
 
-    final tasks = selectedList.tasks;
+    final tasks = _tasks;
     final index = tasks.indexWhere((it) => it.id == task.id);
     tasks[index] = updatedTask;
 
-    if (selectedList.id == -1) {
-      // Update tasks on main list
-      // Important list is just a fake placeholder
-      final ownerList = _findByTask(task);
-      final ownerIndex = _taskLists.indexWhere((it) => it.id == ownerList.id);
-      final ownerTaskIndex = ownerList.tasks.indexWhere(
-        (it) => it.id == task.id,
-      );
-      ownerList.tasks[ownerTaskIndex] = updatedTask;
-      _taskLists[ownerIndex] = ownerList;
-    }
+    // if (selectedList.id == -1) {
+    //   // Update tasks on main list
+    //   // Important list is just a fake placeholder
+    //   final ownerList = _findByTask(task);
+    //   final ownerIndex = _taskLists.indexWhere((it) => it.id == ownerList.id);
+    //   final ownerTaskIndex = ownerList.tasks.indexWhere(
+    //     (it) => it.id == task.id,
+    //   );
+    //   ownerList.tasks[ownerTaskIndex] = updatedTask;
+    //   _taskLists[ownerIndex] = ownerList;
+    // }
 
     _endChanges();
     return updatedTask;
   }
 
-  TaskList _findByTask(Task task) {
-    for (var list in _taskLists) {
-      if (list.tasks.indexWhere((it) => it.id == task.id) > -1) {
-        return list;
-      }
-    }
-    return null;
-  }
+  // TaskList _findByTask(Task task) {
+  //   for (var list in _taskLists) {
+  //     if (_tasks.indexWhere((it) => it.id == task.id) > -1) {
+  //       return list;
+  //     }
+  //   }
+  //   return null;
+  // }
 
   /// Updates [task] important through the API and updates the store.
   Future<Task> updateTaskImportant(Task task) async {
@@ -253,22 +255,22 @@ class Tasks with ChangeNotifier {
       task.important ? false : true,
     );
 
-    final tasks = selectedList.tasks;
+    final tasks = _tasks;
     final index = tasks.indexWhere((it) => it.id == task.id);
     tasks[index] = updatedTask;
 
     // Remove task from important and update owner list
-    if (selectedList.id == -1) {
-      selectedList.tasks.removeWhere((it) => it.id == task.id);
+    // if (selectedList.id == -1) {
+    //   _tasks.removeWhere((it) => it.id == task.id);
 
-      final ownerList = _findByTask(task);
-      final ownerIndex = _taskLists.indexWhere((it) => it.id == ownerList.id);
-      final ownerTaskIndex = ownerList.tasks.indexWhere(
-        (it) => it.id == task.id,
-      );
-      ownerList.tasks[ownerTaskIndex] = updatedTask;
-      _taskLists[ownerIndex] = ownerList;
-    }
+    //   final ownerList = _findByTask(task);
+    //   final ownerIndex = _taskLists.indexWhere((it) => it.id == ownerList.id);
+    //   final ownerTaskIndex = ownerList.tasks.indexWhere(
+    //     (it) => it.id == task.id,
+    //   );
+    //   ownerList.tasks[ownerTaskIndex] = updatedTask;
+    //   _taskLists[ownerIndex] = ownerList;
+    // }
 
     _endChanges();
     return updatedTask;
@@ -276,13 +278,13 @@ class Tasks with ChangeNotifier {
 
   void deleteTask(Task task) async {
     await tasksService.delete(task.id);
-    selectedList.tasks.removeAt(selectedList.tasks.indexOf(task));
+    _tasks.removeAt(_tasks.indexOf(task));
 
     // Remove the task from its original list
-    if (selectedList.id == -1) {
-      final ownerList = _findByTask(task);
-      ownerList.tasks.removeAt(ownerList.tasks.indexOf(task));
-    }
+    // if (selectedList.id == -1) {
+    //   final ownerList = _findByTask(task);
+    //   ownerList.tasks.removeAt(ownerList.tasks.indexOf(task));
+    // }
 
     _endChanges();
   }

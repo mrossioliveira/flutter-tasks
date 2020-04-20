@@ -30,6 +30,7 @@ class Task {
       important: json['important'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      list: json['list'] != null ? TaskList.fromJson(json['list']) : null,
     );
   }
 }
