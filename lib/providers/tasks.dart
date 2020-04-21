@@ -298,7 +298,7 @@ class Tasks with ChangeNotifier {
         selectedList.taskCounter--;
         break;
       default:
-        _allLists.firstWhere((list) => list.id == task.list.id).taskCounter--;
+        selectedList.taskCounter--;
     }
   }
 
@@ -317,7 +317,7 @@ class Tasks with ChangeNotifier {
         selectedList.taskCounter++;
         break;
       default:
-        _allLists.firstWhere((list) => list.id == task.list?.id).taskCounter++;
+        selectedList.taskCounter++;
     }
   }
 
@@ -354,7 +354,7 @@ class Tasks with ChangeNotifier {
   void deleteTask(Task task) async {
     await tasksService.delete(task.id);
     _allTasks.removeAt(_allTasks.indexOf(task));
-    _allLists.firstWhere((list) => list.id == task.list.id).taskCounter--;
+    _decrementListCounter(task);
 
     _updateSelectedTasks();
 

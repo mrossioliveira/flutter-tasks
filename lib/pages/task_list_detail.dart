@@ -337,7 +337,9 @@ class TaskListDetailPage extends StatelessWidget {
         ),
       ).build(context),
       body: RefreshIndicator(
-          child: _showTasks(context), onRefresh: () => _onRefresh(context)),
+        child: _showTasks(context),
+        onRefresh: () => _onRefresh(context),
+      ),
     );
   }
 }
