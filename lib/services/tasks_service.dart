@@ -54,7 +54,7 @@ class TasksService extends UtilsService implements ITasksService {
         'listId': createTaskDto.listId,
         'title': createTaskDto.title,
         'description': '',
-        'important': false,
+        'important': createTaskDto.important.toString(),
       }),
     );
 

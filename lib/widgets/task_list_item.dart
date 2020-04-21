@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks/models/list.dart';
-import 'package:tasks/models/list_holder.dart';
+import 'package:tasks/models/list_type.dart';
 
 import 'package:tasks/pages/task_list_detail.dart';
 
@@ -17,12 +17,12 @@ class TaskListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     _buildLeadingIcon() {
       switch (list.id) {
-        case ListHolder.IMPORTANT:
+        case ListType.IMPORTANT:
           return Icon(
             Icons.star,
             color: Theme.of(context).accentColor,
           );
-        case ListHolder.TASKS:
+        case ListType.TASKS:
           return Icon(
             Icons.done,
             color: Theme.of(context).primaryColor,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tasks/models/list.dart';
-import 'package:tasks/models/list_holder.dart';
+import 'package:tasks/models/list_type.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/providers/tasks.dart';
 import 'package:tasks/styles.dart';
@@ -45,7 +45,7 @@ class TaskListDetailPage extends StatelessWidget {
         child: _hasTasks(taskProvider.selectedList)
             ? _buildTaskList(
                 taskProvider.tasks,
-                taskProvider.selectedList.id == ListHolder.IMPORTANT,
+                taskProvider.selectedList.id == ListType.IMPORTANT,
               )
             : _buildEmptyList(),
       ),
@@ -198,9 +198,9 @@ class TaskListDetailPage extends StatelessWidget {
 
     _getTitleColor(BuildContext context, TaskList list) {
       switch (list.id) {
-        case ListHolder.IMPORTANT:
+        case ListType.IMPORTANT:
           return Theme.of(context).accentColor;
-        case ListHolder.TASKS:
+        case ListType.TASKS:
           return Theme.of(context).primaryColor;
         default:
           return Colors.grey[400];

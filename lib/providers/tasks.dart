@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasks/dto/create_task_dto.dart';
 import 'package:tasks/dto/list_update_dto.dart';
-import 'package:tasks/models/list_holder.dart';
+import 'package:tasks/models/list_type.dart';
 
 import 'package:tasks/providers/auth.dart';
 import 'package:tasks/services/lists_service.dart';
@@ -52,7 +52,7 @@ class Tasks with ChangeNotifier {
     List<TaskList> lists = [];
     lists.add(
       new TaskList(
-        id: ListHolder.IMPORTANT,
+        id: ListType.IMPORTANT,
         title: 'Important',
         taskCounter: _allTasks
             .where((task) => task.important && task.status == 'OPEN')
@@ -61,7 +61,7 @@ class Tasks with ChangeNotifier {
     );
     lists.add(
       new TaskList(
-        id: ListHolder.TASKS,
+        id: ListType.TASKS,
         title: 'Tasks',
         taskCounter: _allTasks
             .where((task) => task.list == null && task.status == 'OPEN')
@@ -109,10 +109,10 @@ class Tasks with ChangeNotifier {
     _selectedList = list;
 
     switch (list.id) {
-      case ListHolder.IMPORTANT:
+      case ListType.IMPORTANT:
         _selectedTasks = _getImportantTasks();
         break;
-      case ListHolder.TASKS:
+      case ListType.TASKS:
         _selectedTasks = _getListlessTasks();
         break;
       default:
@@ -249,11 +249,16 @@ class Tasks with ChangeNotifier {
   /// Adds the [task] through the API and updates the store.
   void addTask(Task task) async {
     final createdTask = await tasksService.create(
-      new CreateTaskDto(title: task.title, listId: selectedList.id),
+      new CreateTaskDto(
+        title: task.title,
+        listId: selectedList.id,
+        important: selectedList.id == ListType.IMPORTANT,
+      ),
     );
     _allTasks.add(createdTask);
-    _selectedTasks.add(createdTask);
+    // _selectedTasks.add(createdTask);
 
+    _updateSelectedTasks();
     _incrementListCounter(task);
 
     _endChanges();
@@ -285,16 +290,16 @@ class Tasks with ChangeNotifier {
 
   _decrementListCounter(Task task) {
     switch (selectedList.id) {
-      case ListHolder.IMPORTANT:
+      case ListType.IMPORTANT:
         if (task.list != null) {
           taskLists.firstWhere((list) => list.id == task.list.id).taskCounter--;
         } else {
           taskLists
-              .firstWhere((list) => list.id == ListHolder.TASKS)
+              .firstWhere((list) => list.id == ListType.TASKS)
               .taskCounter--;
         }
         break;
-      case ListHolder.TASKS:
+      case ListType.TASKS:
         selectedList.taskCounter--;
         break;
       default:
@@ -304,16 +309,16 @@ class Tasks with ChangeNotifier {
 
   _incrementListCounter(Task task) {
     switch (selectedList.id) {
-      case ListHolder.IMPORTANT:
+      case ListType.IMPORTANT:
         if (task.list != null) {
           taskLists.firstWhere((list) => list.id == task.list.id).taskCounter++;
         } else {
           taskLists
-              .firstWhere((list) => list.id == ListHolder.TASKS)
+              .firstWhere((list) => list.id == ListType.TASKS)
               .taskCounter++;
         }
         break;
-      case ListHolder.TASKS:
+      case ListType.TASKS:
         selectedList.taskCounter++;
         break;
       default:
@@ -323,10 +328,10 @@ class Tasks with ChangeNotifier {
 
   _updateSelectedTasks() {
     switch (selectedList.id) {
-      case ListHolder.IMPORTANT:
+      case ListType.IMPORTANT:
         _selectedTasks = _getImportantTasks();
         break;
-      case ListHolder.TASKS:
+      case ListType.TASKS:
         _selectedTasks = _getListlessTasks();
         break;
       default:
