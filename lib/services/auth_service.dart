@@ -32,6 +32,33 @@ class AuthService extends UtilsService implements IAuthService {
     }
   }
 
+  @override
+  Future<void> signUp(String username, String email, String password) async {
+    try {
+      final url = '${ApiUtils.NODE_API}/auth/signup';
+
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      handleNodeAPIResponse(response, HttpStatus.created);
+    } catch (e) {
+      if (e is SocketException) {
+        throw SocketException('Unable to contact server');
+      } else if (e is HttpException) {
+        throw HttpException(e.message);
+      } else {
+        throw e;
+      }
+    }
+  }
+
   /// Extracts the exp in a datetime by paring the [token].
   DateTime extractExpFromToken(String token) {
     final payload = token.split('.')[1];

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tasks/pages/home.dart';
 
 import 'package:tasks/providers/auth.dart';
 
@@ -28,8 +29,11 @@ class SignupCard extends StatefulWidget {
 
 class _SignupCardState extends State<SignupCard> {
   final _formkey = new GlobalKey<FormState>();
-
   bool _isLoading;
+
+  String _username;
+  String _email;
+  String _password;
 
   @override
   void initState() {
@@ -75,8 +79,12 @@ class _SignupCardState extends State<SignupCard> {
                         return null;
                       }
                     },
+                    onSaved: (String value) {
+                      _username = value;
+                    },
                   ),
                   TextFormField(
+                    keyboardType: TextInputType.emailAddress,
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'email',
@@ -89,6 +97,9 @@ class _SignupCardState extends State<SignupCard> {
                         return null;
                       }
                     },
+                    onSaved: (String value) {
+                      _email = value;
+                    },
                   ),
                   SizedBox(
                     height: 8.0,
@@ -99,13 +110,16 @@ class _SignupCardState extends State<SignupCard> {
                       hintText: 'password',
                       contentPadding: EdgeInsets.symmetric(horizontal: 8),
                     ),
-                    obscureText: true,
+                    obscureText: false,
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'password required';
                       } else {
                         return null;
                       }
+                    },
+                    onSaved: (String value) {
+                      _password = value;
                     },
                   ),
                   SizedBox(
@@ -132,24 +146,43 @@ class _SignupCardState extends State<SignupCard> {
                               ),
                       ),
                       onPressed: () async {
+                        _formkey.currentState.save();
                         if (_formkey.currentState.validate()) {
                           setState(() {
                             _isLoading = true;
                           });
                           try {
-                            await Provider.of<Auth>(context, listen: false)
-                                .signIn(
-                              'mrossioliveira',
-                              'slip0423',
-                            );
+                            await Provider.of<Auth>(
+                              context,
+                              listen: false,
+                            ).signUp(_username, _email, _password);
                             setState(() {
                               _isLoading = false;
                             });
+
+                            // in case of success the user will be logged in
+                            Navigator.of(context).push(
+                              new MaterialPageRoute(
+                                builder: (context) => HomePage(),
+                              ),
+                            );
                           } catch (e) {
                             print(e);
                             setState(() {
                               _isLoading = false;
                             });
+
+                            Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  e.message != null
+                                      ? e.message
+                                      : 'Unable to contact servers.',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
                           }
                         }
                       },

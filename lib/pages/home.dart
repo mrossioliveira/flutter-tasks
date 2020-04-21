@@ -30,92 +30,90 @@ class HomePage extends StatelessWidget {
     }
 
     final auth = Provider.of<Auth>(context);
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: GestureDetector(
-            child: Text(auth.username),
-            onTap: () => {
-              Navigator.of(context).push(
-                new MaterialPageRoute(
-                  builder: (context) => SettingsPage(),
-                ),
-              )
-            },
-          ),
-          backgroundColor: Colors.transparent,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: _handleSearch,
-            )
-          ],
-        ),
-        body: RefreshIndicator(
-          onRefresh: () => _onRefresh(context),
-          child: Container(
-            child: TaskListWidget(),
-          ),
-          color: Theme.of(context).primaryColor,
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add, color: Colors.white),
-          backgroundColor: Theme.of(context).primaryColor,
-          onPressed: () {
-            showDialog(
-              barrierDismissible: false,
-              useRootNavigator: true,
-              context: context,
-              child: new SimpleDialog(
-                contentPadding: EdgeInsets.all(0),
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(
-                      children: <Widget>[
-                        TextField(
-                          controller: _listInputController,
-                          autofocus: true,
-                          decoration: InputDecoration(
-                            hintText: 'Enter list title',
-                          ),
-                          onSubmitted: (String value) {
-                            _onListSubmit(value);
-                          },
-                          textInputAction: TextInputAction.send,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            FlatButton(
-                              child: Text(
-                                'Cancel',
-                                style: TEXT_BODY_LIGHT,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            FlatButton(
-                              color: Theme.of(context).primaryColor,
-                              child: Text(
-                                'Create',
-                                style: TEXT_BODY_WHITE,
-                              ),
-                              onPressed: () async {
-                                _onListSubmit(_listInputController.text);
-                              },
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        title: GestureDetector(
+          child: Text(auth.username),
+          onTap: () => {
+            Navigator.of(context).push(
+              new MaterialPageRoute(
+                builder: (context) => SettingsPage(),
               ),
-            );
+            )
           },
         ),
+        backgroundColor: Colors.transparent,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: _handleSearch,
+          )
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () => _onRefresh(context),
+        child: Container(
+          child: TaskListWidget(),
+        ),
+        color: Theme.of(context).primaryColor,
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: Theme.of(context).primaryColor,
+        onPressed: () {
+          showDialog(
+            barrierDismissible: false,
+            useRootNavigator: true,
+            context: context,
+            child: new SimpleDialog(
+              contentPadding: EdgeInsets.all(0),
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(
+                    children: <Widget>[
+                      TextField(
+                        controller: _listInputController,
+                        autofocus: true,
+                        decoration: InputDecoration(
+                          hintText: 'Enter list title',
+                        ),
+                        onSubmitted: (String value) {
+                          _onListSubmit(value);
+                        },
+                        textInputAction: TextInputAction.send,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          FlatButton(
+                            child: Text(
+                              'Cancel',
+                              style: TEXT_BODY_LIGHT,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            color: Theme.of(context).primaryColor,
+                            child: Text(
+                              'Create',
+                              style: TEXT_BODY_WHITE,
+                            ),
+                            onPressed: () async {
+                              _onListSubmit(_listInputController.text);
+                            },
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }

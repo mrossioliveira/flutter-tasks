@@ -95,6 +95,24 @@ class Auth with ChangeNotifier {
     _prefs.remove('userData');
   }
 
+  Future<void> signUp(String username, String email, String password) async {
+    try {
+      await authService.signUp(username, email, password);
+      await signIn(username, password);
+
+      notifyListeners();
+      _saveUserData();
+    } catch (e) {
+      if (e is SocketException) {
+        throw SocketException('Unable to contact server');
+      } else if (e is HttpException) {
+        throw HttpException(e.message);
+      } else {
+        throw e;
+      }
+    }
+  }
+
   _saveUserData() async {
     final _prefs = await SharedPreferences.getInstance();
     final userData = json.encode({

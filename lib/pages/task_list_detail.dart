@@ -6,6 +6,7 @@ import 'package:tasks/models/list_type.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/providers/tasks.dart';
 import 'package:tasks/styles.dart';
+import 'package:tasks/widgets/empty_list_art.dart';
 import 'package:tasks/widgets/task_item.dart';
 
 class TaskListDetailPage extends StatelessWidget {
@@ -23,17 +24,10 @@ class TaskListDetailPage extends StatelessWidget {
     );
   }
 
-  _buildEmptyList() {
-    return Center(
-      child: Text('Nothing here :)'),
-    );
-  }
-
   bool _hasTasks(TaskList taskList) {
-    // FIXME: Check for taks
-    // if (taskList.tasks == null) {
-    //   return false;
-    // }
+    if (taskList.taskCounter == 0) {
+      return false;
+    }
     return true;
   }
 
@@ -47,7 +41,7 @@ class TaskListDetailPage extends StatelessWidget {
                 taskProvider.tasks,
                 taskProvider.selectedList.id == ListType.IMPORTANT,
               )
-            : _buildEmptyList(),
+            : EmptyList(),
       ),
     );
   }
