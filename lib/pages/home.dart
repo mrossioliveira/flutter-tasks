@@ -82,6 +82,7 @@ class HomePage extends StatelessWidget {
                           onSubmitted: (String value) {
                             _onListSubmit(value);
                           },
+                          textInputAction: TextInputAction.send,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
