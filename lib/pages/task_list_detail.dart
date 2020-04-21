@@ -207,6 +207,22 @@ class TaskListDetailPage extends StatelessWidget {
       }
     }
 
+    _onTaskSubmit(String title) {
+      Provider.of<Tasks>(
+        context,
+        listen: false,
+      ).addTask(
+        new Task(
+          id: 10,
+          title: title,
+          description: '',
+          important: false,
+        ),
+      );
+      _taskInputController.clear();
+      Navigator.of(context).pop();
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
@@ -239,30 +255,23 @@ class TaskListDetailPage extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: TextField(
+                          textInputAction: TextInputAction.send,
                           controller: _taskInputController,
                           decoration: InputDecoration(
                             hasFloatingPlaceholder: false,
                             hintText: 'Add task',
                           ),
                           autofocus: true,
+                          onSubmitted: (value) {
+                            _onTaskSubmit(value);
+                          },
                         ),
                       ),
                       IconButton(
                         color: Colors.blue,
                         icon: Icon(Icons.arrow_upward),
                         onPressed: () {
-                          Provider.of<Tasks>(
-                            context,
-                            listen: false,
-                          ).addTask(
-                            new Task(
-                              id: 10,
-                              title: _taskInputController.text,
-                              description: '',
-                              important: false,
-                            ),
-                          );
-                          _taskInputController.clear();
+                          _onTaskSubmit(_taskInputController.text);
                         },
                       )
                     ],
