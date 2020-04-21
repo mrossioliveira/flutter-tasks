@@ -199,6 +199,12 @@ class Tasks with ChangeNotifier {
         updatedList;
     selectList(updatedList);
 
+    // Update tasks from this list
+    for (var task
+        in _allTasks.where((task) => task.list?.id == updatedList.id)) {
+      task.list = updatedList;
+    }
+
     _endChanges();
     return updatedList;
   }
@@ -365,7 +371,11 @@ class Tasks with ChangeNotifier {
   void deleteTask(Task task) async {
     await tasksService.delete(task.id);
     _allTasks.removeAt(_allTasks.indexOf(task));
-    _decrementListCounter(task);
+
+    // If the task is done there is no need to update
+    if (task.status == 'OPEN') {
+      _decrementListCounter(task);
+    }
 
     _updateSelectedTasks();
 

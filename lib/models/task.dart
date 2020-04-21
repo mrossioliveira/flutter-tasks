@@ -8,7 +8,7 @@ class Task {
   final bool important;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final TaskList list;
+  TaskList list;
 
   Task({
     this.id,
