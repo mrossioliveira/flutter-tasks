@@ -385,20 +385,22 @@ class Tasks with ChangeNotifier {
   /// Reloads the current list and all its tasks.
   Future<void> refreshSelectedList() async {
     if (selectedList.id > 0) {
-      final currentTasksCounter = selectedList.taskCounter;
       final listId = selectedList.id;
       final updatedList = await listsService.findById(listId);
-      updatedList.taskCounter = currentTasksCounter;
 
       final index = _allLists.indexWhere((list) => list.id == listId);
       _allLists[index] = updatedList;
 
       // Update tasks
-      final uptatedTasks = await tasksService.find();
-      _allTasks = uptatedTasks;
+      final updatedTasks = await tasksService.find();
+      _allTasks = updatedTasks;
       _selectedTasks =
           _allTasks.where((task) => task.list?.id == selectedList.id).toList();
 
+      updatedList.taskCounter = updatedTasks
+          .where((task) =>
+              task.list?.id == updatedList.id && task.status == 'OPEN')
+          .length;
       selectList(updatedList);
     } else {
       // update all tasks
