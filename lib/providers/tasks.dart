@@ -184,13 +184,19 @@ class Tasks with ChangeNotifier {
   ///
   /// The updated list will be selected and updated in the store.
   Future<TaskList> updateListTitle(String title) async {
+    // Keep current counter
+    final currentTasksCounter = selectedList.taskCounter;
+
     final updatedList = await listsService.update(
       new TaskListUpdateDto(id: selectedList.id, title: title),
     );
 
+    // Set the counter
+    updatedList.taskCounter = currentTasksCounter;
+
+    // Update the list in the store and select it
     _allLists[_allLists.indexWhere((list) => list.id == updatedList.id)] =
         updatedList;
-
     selectList(updatedList);
 
     _endChanges();
