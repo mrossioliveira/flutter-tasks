@@ -363,19 +363,28 @@ class Tasks with ChangeNotifier {
 
   /// Reloads the current list and all its tasks.
   Future<void> refreshSelectedList() async {
-    final listId = selectedList.id;
-    final updatedList = await listsService.findById(listId);
+    if (selectedList.id > 0) {
+      final listId = selectedList.id;
+      final updatedList = await listsService.findById(listId);
 
-    final index = _allLists.indexWhere((list) => list.id == listId);
-    _allLists[index] = updatedList;
+      final index = _allLists.indexWhere((list) => list.id == listId);
+      _allLists[index] = updatedList;
 
-    // Update tasks
-    final uptatedTasks = await tasksService.find();
-    _allTasks = uptatedTasks;
-    _selectedTasks =
-        _allTasks.where((task) => task.list?.id == selectedList.id).toList();
+      // Update tasks
+      final uptatedTasks = await tasksService.find();
+      _allTasks = uptatedTasks;
+      _selectedTasks =
+          _allTasks.where((task) => task.list?.id == selectedList.id).toList();
 
-    selectList(updatedList);
+      selectList(updatedList);
+    } else {
+      // update all tasks
+      final tasks = await tasksService.find();
+      _allTasks = tasks;
+
+      // update selected tasks
+      _updateSelectedTasks();
+    }
     _endChanges();
   }
 }
