@@ -50,9 +50,7 @@ class TaskListItem extends StatelessWidget {
         );
         Navigator.of(context).push(
           new MaterialPageRoute(
-            builder: (context) => TaskListDetailPage(
-              creating: false,
-            ),
+            builder: (context) => TaskListDetailPage(),
           ),
         );
       },

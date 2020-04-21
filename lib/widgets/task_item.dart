@@ -6,8 +6,9 @@ import 'package:tasks/providers/tasks.dart';
 
 class TaskItem extends StatefulWidget {
   final Task task;
+  final bool showList;
 
-  TaskItem({@required this.task});
+  TaskItem({@required this.task, this.showList});
 
   @override
   _TaskItemState createState() => _TaskItemState();
@@ -121,16 +122,39 @@ class _TaskItemState extends State<TaskItem> {
     );
   }
 
-  Text _buildText() {
-    return Text(
-      widget.task.title,
-      style: TextStyle(
-        color: Colors.white70,
-        decoration: widget.task.status == 'DONE'
-            ? TextDecoration.lineThrough
-            : TextDecoration.none,
-      ),
-    );
+  Widget _buildText() {
+    return !widget.showList
+        ? Text(
+            widget.task.title,
+            style: TextStyle(
+              color: Colors.white70,
+              decoration: widget.task.status == 'DONE'
+                  ? TextDecoration.lineThrough
+                  : TextDecoration.none,
+            ),
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                widget.task.title,
+                style: TextStyle(
+                  color: Colors.white70,
+                  decoration: widget.task.status == 'DONE'
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                ),
+              ),
+              Text(
+                widget.task.list?.title,
+                style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 10.0,
+                ),
+              )
+            ],
+          );
   }
 
   Widget _buildTaskStatus(BuildContext context) {
