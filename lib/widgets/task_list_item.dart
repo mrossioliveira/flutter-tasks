@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasks/models/list.dart';
+import 'package:tasks/models/list_holder.dart';
 
 import 'package:tasks/pages/task_list_detail.dart';
 
@@ -14,6 +15,26 @@ class TaskListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _buildLeadingIcon() {
+      switch (list.id) {
+        case ListHolder.IMPORTANT:
+          return Icon(
+            Icons.star,
+            color: Theme.of(context).accentColor,
+          );
+        case ListHolder.TASKS:
+          return Icon(
+            Icons.done,
+            color: Theme.of(context).primaryColor,
+          );
+        default:
+          return Icon(
+            Icons.list,
+            color: Colors.grey[600],
+          );
+      }
+    }
+
     return ListTile(
       title: Text(
         list.title,
@@ -22,12 +43,7 @@ class TaskListItem extends StatelessWidget {
         ),
       ),
       trailing: TaskListItemCounter(list: list),
-      leading: Icon(
-        list.id != -1 ? Icons.list : Icons.star,
-        color: list.id != -1
-            ? Theme.of(context).primaryColor
-            : Theme.of(context).accentColor,
-      ),
+      leading: _buildLeadingIcon(),
       onTap: () {
         Provider.of<Tasks>(context, listen: false).selectList(
           list,

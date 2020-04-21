@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:tasks/models/list.dart';
+import 'package:tasks/models/list_holder.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/providers/tasks.dart';
 import 'package:tasks/styles.dart';
@@ -193,6 +194,17 @@ class TaskListDetailPage extends StatelessWidget {
       ).toggleShowCompleted();
     }
 
+    _getTitleColor(BuildContext context, TaskList list) {
+      switch (list.id) {
+        case ListHolder.IMPORTANT:
+          return Theme.of(context).accentColor;
+        case ListHolder.TASKS:
+          return Theme.of(context).primaryColor;
+        default:
+          return Colors.grey[400];
+      }
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
@@ -274,6 +286,9 @@ class TaskListDetailPage extends StatelessWidget {
               taskProvider.selectedList != null
                   ? taskProvider.selectedList.title
                   : 'Untitled list',
+              style: TextStyle(
+                color: _getTitleColor(context, taskProvider.selectedList),
+              ),
             ),
           ),
           actions: taskProvider.selectedList.id > 0
