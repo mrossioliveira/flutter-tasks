@@ -13,6 +13,22 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _onListSubmit(String title) async {
+      await Provider.of<Tasks>(
+        context,
+        listen: false,
+      ).addList(title);
+
+      Navigator.of(context).pop();
+      _listInputController.clear();
+
+      Navigator.of(context).push(
+        new MaterialPageRoute(
+          builder: (context) => TaskListDetailPage(),
+        ),
+      );
+    }
+
     final auth = Provider.of<Auth>(context);
     return SafeArea(
       child: Scaffold(
@@ -63,6 +79,9 @@ class HomePage extends StatelessWidget {
                           decoration: InputDecoration(
                             hintText: 'Enter list title',
                           ),
+                          onSubmitted: (String value) {
+                            _onListSubmit(value);
+                          },
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -83,18 +102,7 @@ class HomePage extends StatelessWidget {
                                 style: TEXT_BODY_WHITE,
                               ),
                               onPressed: () async {
-                                await Provider.of<Tasks>(
-                                  context,
-                                  listen: false,
-                                ).addList(_listInputController.text);
-
-                                Navigator.of(context).pop();
-
-                                Navigator.of(context).push(
-                                  new MaterialPageRoute(
-                                    builder: (context) => TaskListDetailPage(),
-                                  ),
-                                );
+                                _onListSubmit(_listInputController.text);
                               },
                             ),
                           ],
