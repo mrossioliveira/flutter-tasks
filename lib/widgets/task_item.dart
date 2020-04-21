@@ -123,17 +123,8 @@ class _TaskItemState extends State<TaskItem> {
   }
 
   Widget _buildText() {
-    return !widget.showList
-        ? Text(
-            widget.task.title,
-            style: TextStyle(
-              color: Colors.white70,
-              decoration: widget.task.status == 'DONE'
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none,
-            ),
-          )
-        : Column(
+    return widget.showList && widget.task.list != null
+        ? Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -147,13 +138,22 @@ class _TaskItemState extends State<TaskItem> {
                 ),
               ),
               Text(
-                widget.task.list?.title,
+                widget.task.list != null ? widget.task.list.title : '',
                 style: TextStyle(
                   color: Colors.white54,
                   fontSize: 10.0,
                 ),
               )
             ],
+          )
+        : Text(
+            widget.task.title,
+            style: TextStyle(
+              color: Colors.white70,
+              decoration: widget.task.status == 'DONE'
+                  ? TextDecoration.lineThrough
+                  : TextDecoration.none,
+            ),
           );
   }
 
