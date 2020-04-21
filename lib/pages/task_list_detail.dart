@@ -276,64 +276,66 @@ class TaskListDetailPage extends StatelessWidget {
                   : 'Untitled list',
             ),
           ),
-          actions: <Widget>[
-            PopupMenuButton<MenuOption>(
-              onSelected: (MenuOption option) {
-                switch (option.code) {
-                  case 'RENAME':
-                    _onRename();
-                    break;
-                  case 'TOGGLE_COMPLETED':
-                    _onToggleCompleted();
-                    break;
-                  case 'DELETE':
-                    _onDelete();
-                    break;
-                }
-              },
-              itemBuilder: (context) {
-                List<MenuOption> options = <MenuOption>[
-                  MenuOption(
-                    code: 'RENAME',
-                    title: 'Rename list',
-                    icon: Icons.edit,
-                  ),
-                  MenuOption(
-                    code: 'TOGGLE_COMPLETED',
-                    title: taskProvider.showCompleted
-                        ? 'Hide completed'
-                        : 'Show Completed',
-                    icon: taskProvider.showCompleted
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                  ),
-                  MenuOption(
-                    code: 'DELETE',
-                    title: 'Delete list',
-                    icon: Icons.delete_forever,
-                  ),
-                ];
+          actions: taskProvider.selectedList.id > 0
+              ? <Widget>[
+                  PopupMenuButton<MenuOption>(
+                    onSelected: (MenuOption option) {
+                      switch (option.code) {
+                        case 'RENAME':
+                          _onRename();
+                          break;
+                        case 'TOGGLE_COMPLETED':
+                          _onToggleCompleted();
+                          break;
+                        case 'DELETE':
+                          _onDelete();
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) {
+                      List<MenuOption> options = <MenuOption>[
+                        MenuOption(
+                          code: 'RENAME',
+                          title: 'Rename list',
+                          icon: Icons.edit,
+                        ),
+                        MenuOption(
+                          code: 'TOGGLE_COMPLETED',
+                          title: taskProvider.showCompleted
+                              ? 'Hide completed'
+                              : 'Show Completed',
+                          icon: taskProvider.showCompleted
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        MenuOption(
+                          code: 'DELETE',
+                          title: 'Delete list',
+                          icon: Icons.delete_forever,
+                        ),
+                      ];
 
-                return options.map((MenuOption option) {
-                  return PopupMenuItem<MenuOption>(
-                    value: option,
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          option.icon,
-                          color: Colors.grey[400],
-                        ),
-                        SizedBox(
-                          width: 8.0,
-                        ),
-                        Text(option.title)
-                      ],
-                    ),
-                  );
-                }).toList();
-              },
-            )
-          ],
+                      return options.map((MenuOption option) {
+                        return PopupMenuItem<MenuOption>(
+                          value: option,
+                          child: Row(
+                            children: <Widget>[
+                              Icon(
+                                option.icon,
+                                color: Colors.grey[400],
+                              ),
+                              SizedBox(
+                                width: 8.0,
+                              ),
+                              Text(option.title)
+                            ],
+                          ),
+                        );
+                      }).toList();
+                    },
+                  )
+                ]
+              : null,
         ),
       ).build(context),
       body: RefreshIndicator(
