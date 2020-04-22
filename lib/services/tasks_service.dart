@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:tasks/config/api_utils.dart';
 import 'package:tasks/dto/create_task_dto.dart';
+import 'package:tasks/dto/update_task_dto.dart';
 import 'package:tasks/models/task.dart';
 import 'package:tasks/providers/auth.dart';
 import 'package:tasks/services/tasks_service_interface.dart';
@@ -73,6 +74,23 @@ class TasksService extends UtilsService implements ITasksService {
 
     handleNodeAPIResponse(response, HttpStatus.ok);
     return true;
+  }
+
+  @override
+  Future<Task> update(int id, UpdateTaskDto updateTaskDto) async {
+    final url = '${ApiUtils.NODE_API}/tasks/$id';
+
+    final response = await http.patch(
+      url,
+      headers: getDefaultHeaders(authProvider),
+      body: json.encode({
+        'title': updateTaskDto.title,
+        'description': updateTaskDto.notes == null ? '' : updateTaskDto.notes,
+      }),
+    );
+
+    final responseBody = handleNodeAPIResponse(response, HttpStatus.ok);
+    return Task.fromJson(responseBody);
   }
 
   @override

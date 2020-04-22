@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasks/dto/create_task_dto.dart';
 import 'package:tasks/dto/list_update_dto.dart';
+import 'package:tasks/dto/update_task_dto.dart';
 import 'package:tasks/models/list_type.dart';
 
 import 'package:tasks/providers/auth.dart';
@@ -207,6 +208,18 @@ class Tasks with ChangeNotifier {
 
     _endChanges();
     return updatedList;
+  }
+
+  Future<Task> updateTask(int id, UpdateTaskDto updateTaskDto) async {
+    final updatedTask = await tasksService.update(id, updateTaskDto);
+
+    final index = _allTasks.indexWhere((task) => task.id == id);
+    _allTasks[index] = updatedTask;
+
+    _updateSelectedTasks();
+
+    notifyListeners();
+    return updatedTask;
   }
 
   List<Task> _getImportantTasks() {
