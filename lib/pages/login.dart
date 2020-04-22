@@ -67,6 +67,9 @@ class _AuthCardState extends State<AuthCard> {
                     height: 16.0,
                   ),
                   TextFormField(
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    textCapitalization: TextCapitalization.none,
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'username',
@@ -87,6 +90,9 @@ class _AuthCardState extends State<AuthCard> {
                     height: 8.0,
                   ),
                   TextFormField(
+                    keyboardType: TextInputType.visiblePassword,
+                    textInputAction: TextInputAction.send,
+                    textCapitalization: TextCapitalization.none,
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'password',

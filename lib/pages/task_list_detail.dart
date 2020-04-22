@@ -252,6 +252,8 @@ class TaskListDetailPage extends StatelessWidget {
                       Expanded(
                         child: TextField(
                           textInputAction: TextInputAction.send,
+                          keyboardType: TextInputType.text,
+                          textCapitalization: TextCapitalization.sentences,
                           controller: _taskInputController,
                           decoration: InputDecoration(
                             hasFloatingPlaceholder: false,
@@ -259,7 +261,7 @@ class TaskListDetailPage extends StatelessWidget {
                           ),
                           autofocus: true,
                           onSubmitted: (value) {
-                            _onTaskSubmit(value);
+                            _onTaskSubmit(value.trim());
                           },
                         ),
                       ),
@@ -267,7 +269,7 @@ class TaskListDetailPage extends StatelessWidget {
                         color: Colors.blue,
                         icon: Icon(Icons.arrow_upward),
                         onPressed: () {
-                          _onTaskSubmit(_taskInputController.text);
+                          _onTaskSubmit(_taskInputController.text.trim());
                         },
                       )
                     ],

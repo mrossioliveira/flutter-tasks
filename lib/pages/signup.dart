@@ -67,6 +67,8 @@ class _SignupCardState extends State<SignupCard> {
                     height: 16.0,
                   ),
                   TextFormField(
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.text,
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'username',
@@ -85,6 +87,7 @@ class _SignupCardState extends State<SignupCard> {
                   ),
                   TextFormField(
                     keyboardType: TextInputType.emailAddress,
+                    textCapitalization: TextCapitalization.none,
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'email',
@@ -105,6 +108,8 @@ class _SignupCardState extends State<SignupCard> {
                     height: 8.0,
                   ),
                   TextFormField(
+                    keyboardType: TextInputType.visiblePassword,
+                    textCapitalization: TextCapitalization.none,
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'password',
@@ -155,7 +160,11 @@ class _SignupCardState extends State<SignupCard> {
                             await Provider.of<Auth>(
                               context,
                               listen: false,
-                            ).signUp(_username, _email, _password);
+                            ).signUp(
+                              _username.trim(),
+                              _email.trim(),
+                              _password.trim(),
+                            );
                             setState(() {
                               _isLoading = false;
                             });

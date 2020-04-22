@@ -30,17 +30,24 @@ class HomePage extends StatelessWidget {
     }
 
     final auth = Provider.of<Auth>(context);
+
+    _onUserTap() {
+      Navigator.of(context).push(
+        new MaterialPageRoute(
+          builder: (context) => SettingsPage(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
+        leading: GestureDetector(
+          child: Icon(Icons.person, color: Colors.grey[600]),
+          onTap: _onUserTap,
+        ),
         title: GestureDetector(
           child: Text(auth.username),
-          onTap: () => {
-            Navigator.of(context).push(
-              new MaterialPageRoute(
-                builder: (context) => SettingsPage(),
-              ),
-            )
-          },
+          onTap: _onUserTap,
         ),
         backgroundColor: Colors.transparent,
         actions: <Widget>[
@@ -74,6 +81,8 @@ class HomePage extends StatelessWidget {
                     children: <Widget>[
                       TextField(
                         controller: _listInputController,
+                        keyboardType: TextInputType.text,
+                        textCapitalization: TextCapitalization.sentences,
                         autofocus: true,
                         decoration: InputDecoration(
                           hintText: 'Enter list title',

@@ -110,8 +110,8 @@ class _TaskEditPageState extends State<TaskEditPage> {
         ).updateTask(
           widget.task.id,
           new UpdateTaskDto(
-            title: _titleController.text,
-            notes: _notesController.text,
+            title: _titleController.text.trim(),
+            notes: _notesController.text.trim(),
           ),
         );
       }
@@ -138,6 +138,8 @@ class _TaskEditPageState extends State<TaskEditPage> {
                 _buildStatus(),
                 Expanded(
                   child: TextField(
+                    keyboardType: TextInputType.text,
+                    textCapitalization: TextCapitalization.sentences,
                     textInputAction: TextInputAction.next,
                     focusNode: _titleFocusNode,
                     controller: _titleController,
@@ -158,6 +160,8 @@ class _TaskEditPageState extends State<TaskEditPage> {
           Container(
             padding: EdgeInsets.all(16.0),
             child: TextField(
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
               controller: _notesController,
               focusNode: _notesFocusNode,
               decoration: InputDecoration(
