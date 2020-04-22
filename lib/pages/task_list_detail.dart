@@ -203,7 +203,7 @@ class TaskListDetailPage extends StatelessWidget {
       }
     }
 
-    _onTaskSubmit(String title) {
+    _onTaskSubmit(String title, bool pop) {
       Provider.of<Tasks>(
         context,
         listen: false,
@@ -216,7 +216,10 @@ class TaskListDetailPage extends StatelessWidget {
         ),
       );
       _taskInputController.clear();
-      Navigator.of(context).pop();
+
+      if (pop) {
+        Navigator.of(context).pop();
+      }
     }
 
     return Scaffold(
@@ -261,7 +264,7 @@ class TaskListDetailPage extends StatelessWidget {
                           ),
                           autofocus: true,
                           onSubmitted: (value) {
-                            _onTaskSubmit(value.trim());
+                            _onTaskSubmit(value.trim(), true);
                           },
                         ),
                       ),
@@ -269,7 +272,10 @@ class TaskListDetailPage extends StatelessWidget {
                         color: Colors.blue,
                         icon: Icon(Icons.arrow_upward),
                         onPressed: () {
-                          _onTaskSubmit(_taskInputController.text.trim());
+                          _onTaskSubmit(
+                            _taskInputController.text.trim(),
+                            false,
+                          );
                         },
                       )
                     ],

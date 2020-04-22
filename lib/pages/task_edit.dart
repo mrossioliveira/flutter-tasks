@@ -134,6 +134,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 0.0),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 _buildStatus(),
                 Expanded(
@@ -150,6 +151,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
                       hintText: 'Title',
                       border: InputBorder.none,
                     ),
+                    maxLines: 2,
                   ),
                 ),
                 _buildImportant(),
