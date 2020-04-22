@@ -6,6 +6,7 @@ import 'package:tasks/providers/tasks.dart';
 
 import 'package:tasks/models/list.dart';
 import 'package:tasks/models/task.dart';
+import 'package:tasks/services/debouncer.dart';
 
 class TaskEditPage extends StatelessWidget {
   final TaskList list;
@@ -21,6 +22,8 @@ class TaskEditPage extends StatelessWidget {
     final _titleFocusNode = FocusNode();
     final _notesFocusNode = FocusNode();
 
+    final debouncer = new Debouncer(milliseconds: 500);
+
     Text _buildAppBarTitle() {
       return Text(list != null ? list.title : 'Tasks');
     }
@@ -33,8 +36,8 @@ class TaskEditPage extends StatelessWidget {
       return Icon(Icons.star_border);
     }
 
-    _saveTask() {
-      return Provider.of<Tasks>(
+    _saveTask() async {
+      Provider.of<Tasks>(
         context,
         listen: false,
       ).updateTask(
@@ -44,59 +47,62 @@ class TaskEditPage extends StatelessWidget {
           notes: _notesController.text,
         ),
       );
+      return true;
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: _buildAppBarTitle(),
-      ),
-      body: ListView(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(16.0),
-            child: Row(
-              children: <Widget>[
-                _buildStatus(),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextField(
-                      textInputAction: TextInputAction.next,
-                      focusNode: _titleFocusNode,
-                      controller: _titleController,
-                      onSubmitted: (_) async {
-                        await _saveTask();
-                        FocusScope.of(context).requestFocus(_notesFocusNode);
-                      },
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
+    return WillPopScope(
+      onWillPop: _saveTask,
+      child: Scaffold(
+        appBar: AppBar(
+          title: _buildAppBarTitle(),
+        ),
+        body: ListView(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(16.0),
+              child: Row(
+                children: <Widget>[
+                  _buildStatus(),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextField(
+                        textInputAction: TextInputAction.next,
+                        focusNode: _titleFocusNode,
+                        controller: _titleController,
+                        onChanged: (_) {
+                          debouncer.run(() => print(_saveTask()));
+                        },
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                _buildImportant(),
-              ],
-            ),
-          ),
-          Divider(
-            color: Colors.black,
-          ),
-          Container(
-            padding: EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _notesController,
-              focusNode: _notesFocusNode,
-              decoration: InputDecoration(
-                hintText: 'Notes',
+                  _buildImportant(),
+                ],
               ),
-              maxLines: 6,
-              textInputAction: TextInputAction.newline,
-              onSubmitted: (_) {
-                _saveTask();
-              },
             ),
-          ),
-        ],
+            Divider(
+              color: Colors.black,
+            ),
+            Container(
+              padding: EdgeInsets.all(16.0),
+              child: TextField(
+                controller: _notesController,
+                focusNode: _notesFocusNode,
+                decoration: InputDecoration(
+                  hintText: 'Notes',
+                ),
+                maxLines: 6,
+                textInputAction: TextInputAction.newline,
+                onChanged: (_) {
+                  debouncer.run(() => print(_saveTask()));
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
