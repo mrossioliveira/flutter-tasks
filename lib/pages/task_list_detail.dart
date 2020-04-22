@@ -12,11 +12,12 @@ import 'package:tasks/widgets/task_item.dart';
 class TaskListDetailPage extends StatelessWidget {
   TaskListDetailPage();
 
-  _buildTaskList(List<Task> tasks, bool showList) {
+  _buildTaskList(TaskList list, List<Task> tasks, bool showList) {
     return ListView.builder(
       itemCount: tasks.length,
       itemBuilder: (context, index) {
         return TaskItem(
+          list: list,
           task: tasks[index],
           showList: showList,
         );
@@ -38,6 +39,7 @@ class TaskListDetailPage extends StatelessWidget {
         margin: EdgeInsets.all(0),
         child: _hasTasks(taskProvider.selectedList)
             ? _buildTaskList(
+                taskProvider.selectedList,
                 taskProvider.tasks,
                 taskProvider.selectedList.id == ListType.IMPORTANT,
               )

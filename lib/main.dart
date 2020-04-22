@@ -37,6 +37,7 @@ class TasksApp extends StatelessWidget {
             scaffoldBackgroundColor: Colors.grey[900],
             appBarTheme: AppBarTheme(
               elevation: 0,
+              color: Colors.transparent,
             ),
             inputDecorationTheme: InputDecorationTheme(
               hintStyle: TextStyle(

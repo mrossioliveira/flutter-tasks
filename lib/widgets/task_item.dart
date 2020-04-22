@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tasks/models/list.dart';
 
 import 'package:tasks/models/task.dart';
+import 'package:tasks/pages/task_edit.dart';
 import 'package:tasks/providers/tasks.dart';
 
 class TaskItem extends StatefulWidget {
+  final TaskList list;
   final Task task;
   final bool showList;
 
-  TaskItem({@required this.task, this.showList});
+  TaskItem({@required this.list, @required this.task, this.showList});
 
   @override
   _TaskItemState createState() => _TaskItemState();
@@ -50,23 +53,35 @@ class _TaskItemState extends State<TaskItem> {
     );
   }
 
-  Container _buildDismissibleContent(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(
-          Radius.circular(4.0),
-        ),
-        color: Colors.grey[850],
-      ),
-      child: Row(
-        children: <Widget>[
-          _buildTaskStatus(context),
-          Expanded(
-            child: _buildText(),
+  Widget _buildDismissibleContent(BuildContext context) {
+    return GestureDetector(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(
+            Radius.circular(4.0),
           ),
-          _buildTaskImportant(context)
-        ],
+          color: Colors.grey[850],
+        ),
+        child: Row(
+          children: <Widget>[
+            _buildTaskStatus(context),
+            Expanded(
+              child: _buildText(),
+            ),
+            _buildTaskImportant(context)
+          ],
+        ),
       ),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TaskEditPage(
+              list: widget.list,
+              task: widget.task,
+            ),
+          ),
+        );
+      },
     );
   }
 
