@@ -21,6 +21,11 @@ class Task {
     this.list,
   });
 
+  @override
+  String toString() {
+    return '$id: $title - $status important: $important';
+  }
+
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       id: json['id'],

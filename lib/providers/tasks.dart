@@ -296,9 +296,8 @@ class Tasks with ChangeNotifier {
       task.status == 'OPEN' ? 'DONE' : 'OPEN',
     );
 
-    final tasks = _allTasks;
-    final index = tasks.indexWhere((it) => it.id == task.id);
-    tasks[index] = updatedTask;
+    final index = _allTasks.indexWhere((it) => it.id == task.id);
+    _allTasks[index] = updatedTask;
 
     _updateSelectedTasks();
 
