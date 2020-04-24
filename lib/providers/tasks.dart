@@ -141,6 +141,7 @@ class Tasks with ChangeNotifier {
       if (e is SocketException) {
         throw SocketException('Server seems to be down.');
       }
+      throw e;
     } finally {
       _endChanges();
     }
@@ -162,13 +163,15 @@ class Tasks with ChangeNotifier {
   /// The new list will be added in the store and then selected.
   Future<void> addList(String title) async {
     // Create the new list and update the store
-    final createdList = await listsService.create(new TaskList(title: title));
-    _allLists.add(createdList);
+    try {
+      final createdList = await listsService.create(new TaskList(title: title));
+      _allLists.add(createdList);
 
-    // Select the newly created list
-    selectList(createdList);
-
-    _endChanges();
+      // Select the newly created list
+      selectList(createdList);
+    } catch (e) {
+      throw e;
+    }
     return true;
   }
 

@@ -14,6 +14,7 @@ class Auth with ChangeNotifier {
   }
 
   String _token;
+  String _refreshToken;
   DateTime _exp;
   int _userId;
   String _username;
@@ -38,6 +39,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<bool> tryAutoLogin() async {
+    await authService.refreshToken();
     final _prefs = await SharedPreferences.getInstance();
 
     if (!_prefs.containsKey('userData')) {
@@ -50,13 +52,8 @@ class Auth with ChangeNotifier {
     _userId = userData['userId'];
     _username = userData['username'];
     _token = userData['token'];
+    _refreshToken = userData['refreshToken'];
     _exp = DateTime.parse(userData['exp']);
-
-    // token expired
-    if (_exp.isBefore(DateTime.now())) {
-      signOut();
-      return false;
-    }
 
     notifyListeners();
     return true;
@@ -69,7 +66,26 @@ class Auth with ChangeNotifier {
       _userId = authData.userId;
       _username = authData.username;
       _token = authData.token;
+      _refreshToken = authData.refreshToken;
       _exp = authService.extractExpFromToken(_token);
+
+      notifyListeners();
+      _saveUserData();
+    } catch (e) {
+      if (e is SocketException) {
+        throw SocketException('Unable to contact server');
+      } else if (e is HttpException) {
+        throw HttpException(e.message);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  Future<void> refreshToken() async {
+    try {
+      final refreshedToken = await authService.refreshToken();
+      _token = refreshedToken;
 
       notifyListeners();
       _saveUserData();
@@ -119,6 +135,7 @@ class Auth with ChangeNotifier {
       'userId': _userId,
       'username': _username,
       'token': _token,
+      'refreshToken': _refreshToken,
       'exp': _exp.toIso8601String(),
     });
     _prefs.setString('userData', userData);

@@ -14,19 +14,29 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _onListSubmit(String title) async {
-      await Provider.of<Tasks>(
-        context,
-        listen: false,
-      ).addList(title);
+      try {
+        await Provider.of<Tasks>(
+          context,
+          listen: false,
+        ).addList(title);
 
-      Navigator.of(context).pop();
-      _listInputController.clear();
+        Navigator.of(context).pop();
+        _listInputController.clear();
 
-      Navigator.of(context).push(
-        new MaterialPageRoute(
-          builder: (context) => TaskListDetailPage(),
-        ),
-      );
+        Navigator.of(context).push(
+          new MaterialPageRoute(
+            builder: (context) => TaskListDetailPage(),
+          ),
+        );
+      } catch (e) {
+        Navigator.of(context).pop();
+        showDialog(
+          context: context,
+          child: new AlertDialog(
+            content: Text('Failed'),
+          ),
+        );
+      }
     }
 
     final auth = Provider.of<Auth>(context);
