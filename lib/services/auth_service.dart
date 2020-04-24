@@ -57,10 +57,6 @@ class AuthService extends UtilsService implements IAuthService {
       userData['token'] = responseBody['accessToken'];
       _prefs.setString('userData', json.encode(userData));
 
-      print('NEW TOKEN');
-      print(responseBody['accessToken']);
-      print('==========================');
-
       return responseBody['accessToken'];
     } catch (e) {
       if (e is SocketException) {

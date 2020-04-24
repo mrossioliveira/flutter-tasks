@@ -1,23 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:http_interceptor/http_client_with_interceptor.dart';
 
 import 'package:tasks/config/api_utils.dart';
 import 'package:tasks/dto/list_update_dto.dart';
-import 'package:tasks/providers/auth.dart';
 import 'package:tasks/services/http_interceptor.dart';
 import 'package:tasks/services/lists_service_interface.dart';
 import 'package:tasks/services/utils_service.dart';
 import 'package:tasks/models/list.dart';
 
 class ListsService extends UtilsService implements IListsService {
-  Auth authProvider;
   Client client;
 
-  ListsService({@required this.authProvider}) {
+  ListsService() {
     client = HttpClientWithInterceptor.build(
       interceptors: [HttpInterceptor()],
       requestTimeout: Duration(seconds: 5),
@@ -31,7 +28,7 @@ class ListsService extends UtilsService implements IListsService {
 
     final response = await client.get(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
     );
 
     final responseBody = handleJavaAPIResponse(response, HttpStatus.ok);
@@ -46,7 +43,7 @@ class ListsService extends UtilsService implements IListsService {
 
     final response = await client.get(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
     );
 
     final responseBody = handleJavaAPIResponse(response, HttpStatus.ok);
@@ -61,7 +58,7 @@ class ListsService extends UtilsService implements IListsService {
 
       final response = await client.post(
         url,
-        headers: await getDefaultHeaders(authProvider),
+        headers: await getDefaultHeaders(),
         body: json.encode({
           'title': list.title,
         }),
@@ -81,7 +78,7 @@ class ListsService extends UtilsService implements IListsService {
 
     final response = await client.patch(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
       body: json.encode({
         'title': updateDto.title,
       }),
@@ -98,7 +95,7 @@ class ListsService extends UtilsService implements IListsService {
 
     final response = await client.delete(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
     );
 
     handleNodeAPIResponse(response, HttpStatus.ok);

@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-
 import 'package:http/http.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 
@@ -10,20 +8,16 @@ import 'package:tasks/config/api_utils.dart';
 import 'package:tasks/dto/create_task_dto.dart';
 import 'package:tasks/dto/update_task_dto.dart';
 import 'package:tasks/models/task.dart';
-import 'package:tasks/providers/auth.dart';
-import 'package:tasks/services/expired_token_retry_policy.dart';
 import 'package:tasks/services/http_interceptor.dart';
 import 'package:tasks/services/tasks_service_interface.dart';
 import 'package:tasks/services/utils_service.dart';
 
 class TasksService extends UtilsService implements ITasksService {
   Client client;
-  Auth authProvider;
 
-  TasksService({@required this.authProvider}) {
+  TasksService() {
     client = client = HttpClientWithInterceptor.build(
       interceptors: [HttpInterceptor()],
-      retryPolicy: ExpiredTokenRetryPolicy(),
     );
   }
 
@@ -33,7 +27,7 @@ class TasksService extends UtilsService implements ITasksService {
 
     final response = await client.get(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
     );
 
     final responseBody = handleJavaAPIResponse(response, HttpStatus.ok);
@@ -59,7 +53,7 @@ class TasksService extends UtilsService implements ITasksService {
 
     final response = await client.post(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
       body: json.encode({
         'listId': createTaskDto.listId,
         'title': createTaskDto.title,
@@ -78,7 +72,7 @@ class TasksService extends UtilsService implements ITasksService {
 
     final response = await client.delete(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
     );
 
     handleNodeAPIResponse(response, HttpStatus.ok);
@@ -91,7 +85,7 @@ class TasksService extends UtilsService implements ITasksService {
 
     final response = await client.patch(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
       body: json.encode({
         'title': updateTaskDto.title,
         'description': updateTaskDto.notes == null ? '' : updateTaskDto.notes,
@@ -108,7 +102,7 @@ class TasksService extends UtilsService implements ITasksService {
 
     final response = await client.patch(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
       body: json.encode({
         'id': id,
         'status': status,
@@ -125,7 +119,7 @@ class TasksService extends UtilsService implements ITasksService {
 
     final response = await client.patch(
       url,
-      headers: await getDefaultHeaders(authProvider),
+      headers: await getDefaultHeaders(),
       body: json.encode({
         'id': id,
         'important': important.toString(),

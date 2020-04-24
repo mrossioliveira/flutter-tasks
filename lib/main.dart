@@ -20,8 +20,8 @@ class TasksApp extends StatelessWidget {
           value: Auth(),
         ),
         ChangeNotifierProxyProvider<Auth, Tasks>(
-          create: (_) => Tasks(authProvider: null),
-          update: (_, auth, __) => Tasks(authProvider: auth),
+          create: (_) => Tasks(),
+          update: (_, auth, __) => Tasks(),
         )
       ],
       child: Consumer<Auth>(

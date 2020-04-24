@@ -9,7 +9,6 @@ import 'package:tasks/dto/list_update_dto.dart';
 import 'package:tasks/dto/update_task_dto.dart';
 import 'package:tasks/models/list_type.dart';
 
-import 'package:tasks/providers/auth.dart';
 import 'package:tasks/services/lists_service.dart';
 
 import 'package:tasks/models/task.dart';
@@ -19,8 +18,6 @@ import 'package:tasks/services/tasks_service.dart';
 import 'package:tasks/services/tasks_service_interface.dart';
 
 class Tasks with ChangeNotifier {
-  Auth authProvider;
-
   IListsService listsService;
   ITasksService tasksService;
 
@@ -33,16 +30,12 @@ class Tasks with ChangeNotifier {
   List<Task> _allTasks = [];
   List<Task> _selectedTasks = [];
 
-  Tasks({@required this.authProvider}) {
-    if (authProvider != null) {
-      listsService = new ListsService(authProvider: authProvider);
-      tasksService = new TasksService(authProvider: authProvider);
+  Tasks() {
+    listsService = new ListsService();
+    tasksService = new TasksService();
 
-      if (authProvider.token != null) {
-        _fetchTaskLists();
-        _setShowCompleted();
-      }
-    }
+    _fetchTaskLists();
+    _setShowCompleted();
   }
 
   bool get showCompleted {
