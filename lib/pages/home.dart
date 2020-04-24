@@ -64,10 +64,8 @@ class HomePage extends StatelessWidget {
         ),
         color: Theme.of(context).primaryColor,
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add, color: Colors.white),
-        backgroundColor: Theme.of(context).primaryColor,
-        onPressed: () {
+      bottomNavigationBar: GestureDetector(
+        onTap: () {
           showDialog(
             barrierDismissible: false,
             useRootNavigator: true,
@@ -123,6 +121,24 @@ class HomePage extends StatelessWidget {
             ),
           );
         },
+        child: Container(
+          padding: Theme.of(context).platform == TargetPlatform.android
+              ? EdgeInsets.all(16.0)
+              : EdgeInsets.only(
+                  bottom: 24.0,
+                  left: 16.0,
+                  right: 16.0,
+                  top: 16.0,
+                ),
+          color: Colors.transparent,
+          child: Row(
+            children: <Widget>[
+              Icon(Icons.add),
+              SizedBox(width: 24.0,),
+              Text('New list'),
+            ],
+          ),
+        ),
       ),
     );
   }
