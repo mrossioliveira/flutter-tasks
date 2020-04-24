@@ -125,16 +125,23 @@ class HomePage extends StatelessWidget {
           padding: Theme.of(context).platform == TargetPlatform.android
               ? EdgeInsets.all(16.0)
               : EdgeInsets.only(
-                  bottom: 24.0,
+                  bottom: 20.0,
                   left: 16.0,
                   right: 16.0,
                   top: 16.0,
                 ),
-          color: Colors.transparent,
+          decoration: BoxDecoration(
+              color: Colors.grey[800].withOpacity(0.1),
+              borderRadius: BorderRadius.horizontal(
+                left: Radius.circular(16.0),
+                right: Radius.circular(16.0),
+              )),
           child: Row(
             children: <Widget>[
               Icon(Icons.add),
-              SizedBox(width: 24.0,),
+              SizedBox(
+                width: 24.0,
+              ),
               Text('New list'),
             ],
           ),
