@@ -51,10 +51,6 @@ class HomePage extends StatelessWidget {
       );
     }
 
-    _listInputController.addListener(() {
-      print(_listInputController.text.isEmpty);
-    });
-
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(

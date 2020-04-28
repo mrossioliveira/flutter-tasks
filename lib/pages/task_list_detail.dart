@@ -206,21 +206,22 @@ class TaskListDetailPage extends StatelessWidget {
     }
 
     _onTaskSubmit(String title, bool pop) {
-      Provider.of<Tasks>(
-        context,
-        listen: false,
-      ).addTask(
-        new Task(
-          id: 10,
-          title: title,
-          description: '',
-          important: false,
-        ),
-      );
-      _taskInputController.clear();
+      if (title.isNotEmpty) {
+        Provider.of<Tasks>(
+          context,
+          listen: false,
+        ).addTask(
+          new Task(
+            title: title,
+            description: '',
+            important: false,
+          ),
+        );
+        _taskInputController.clear();
 
-      if (pop) {
-        Navigator.of(context).pop();
+        if (pop) {
+          Navigator.of(context).pop();
+        }
       }
     }
 
