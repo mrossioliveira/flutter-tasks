@@ -60,58 +60,60 @@ class TaskListDetailPage extends StatelessWidget {
     _onRename() {
       final taskProvider = Provider.of<Tasks>(context, listen: false);
       _listInputController.text = taskProvider.selectedList.title;
-      showDialog(
-        barrierDismissible: false,
-        useRootNavigator: true,
-        context: context,
-        child: new SimpleDialog(
-          contentPadding: EdgeInsets.all(0),
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(8.0),
-              child: Column(
-                children: <Widget>[
-                  TextField(
-                    controller: _listInputController,
-                    autofocus: true,
-                    decoration: InputDecoration(hintText: 'Enter list title'),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      FlatButton(
-                        child: Text(
-                          'Cancel',
-                          style: TEXT_BODY_LIGHT,
+      if (taskProvider.selectedList.id > 0) {
+        showDialog(
+          barrierDismissible: false,
+          useRootNavigator: true,
+          context: context,
+          child: new SimpleDialog(
+            contentPadding: EdgeInsets.all(0),
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                  children: <Widget>[
+                    TextField(
+                      controller: _listInputController,
+                      autofocus: true,
+                      decoration: InputDecoration(hintText: 'Enter list title'),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        FlatButton(
+                          child: Text(
+                            'Cancel',
+                            style: TEXT_BODY_LIGHT,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
                         ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      FlatButton(
-                        color: Theme.of(context).primaryColor,
-                        child: Text(
-                          'Save',
-                          style: TEXT_BODY_WHITE,
-                        ),
-                        onPressed: () async {
-                          await Provider.of<Tasks>(
-                            context,
-                            listen: false,
-                          ).updateListTitle(_listInputController.text);
+                        FlatButton(
+                          color: Theme.of(context).primaryColor,
+                          child: Text(
+                            'Save',
+                            style: TEXT_BODY_WHITE,
+                          ),
+                          onPressed: () async {
+                            await Provider.of<Tasks>(
+                              context,
+                              listen: false,
+                            ).updateListTitle(_listInputController.text);
 
-                          // close popup
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
-      );
+                            // close popup
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      }
     }
 
     _onDelete() {

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:tasks/pages/task_list_detail.dart';
 import 'package:tasks/pages/settings.dart';
 import 'package:tasks/styles.dart';
-import 'package:tasks/widgets/buttons/disabled_button.dart';
 import 'package:tasks/widgets/task_list.dart';
 import 'package:tasks/providers/auth.dart';
 import 'package:tasks/providers/tasks.dart';
@@ -50,10 +49,6 @@ class HomePage extends StatelessWidget {
           builder: (context) => SettingsPage(),
         ),
       );
-    }
-
-    _testing() {
-      print('HELLO!');
     }
 
     _listInputController.addListener(() {
