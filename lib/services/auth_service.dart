@@ -55,6 +55,8 @@ class AuthService extends UtilsService implements IAuthService {
 
       final responseBody = jsonDecode(response.body);
       userData['token'] = responseBody['accessToken'];
+      userData['exp'] =
+          extractExpFromToken(responseBody['accessToken']).toIso8601String();
       _prefs.setString('userData', json.encode(userData));
 
       return responseBody['accessToken'];
