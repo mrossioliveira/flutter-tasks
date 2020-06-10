@@ -262,7 +262,7 @@ class TaskListDetailPage extends StatelessWidget {
                           textCapitalization: TextCapitalization.sentences,
                           controller: _taskInputController,
                           decoration: InputDecoration(
-                            hasFloatingPlaceholder: false,
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
                             hintText: 'Add task',
                           ),
                           autofocus: true,

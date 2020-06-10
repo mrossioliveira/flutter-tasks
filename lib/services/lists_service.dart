@@ -24,7 +24,7 @@ class ListsService extends UtilsService implements IListsService {
   /// Get all tasks through the API.
   @override
   Future<List<TaskList>> find() async {
-    final url = '${ApiUtils.JAVA_API}/lists';
+    final url = '${ApiUtils.NODE_API}/lists';
 
     final response = await client.get(
       url,
@@ -39,7 +39,7 @@ class ListsService extends UtilsService implements IListsService {
 
   @override
   Future<TaskList> findById(int id) async {
-    final url = '${ApiUtils.JAVA_API}/lists/$id';
+    final url = '${ApiUtils.NODE_API}/lists/$id';
 
     final response = await client.get(
       url,

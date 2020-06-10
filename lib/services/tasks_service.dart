@@ -23,7 +23,7 @@ class TasksService extends UtilsService implements ITasksService {
 
   @override
   Future<List<Task>> find() async {
-    final url = '${ApiUtils.JAVA_API}/tasks';
+    final url = '${ApiUtils.NODE_API}/tasks';
 
     final response = await client.get(
       url,
