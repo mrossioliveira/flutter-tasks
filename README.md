@@ -1,16 +1,13 @@
-# tasks
+# Flutter-Tasks
 
-A new Flutter project.
+Tasks app to learn Flutter.
 
-## Getting Started
+The app has token based authentication with token refresh, state management with [Provider](https://pub.dev/packages/provider) and [Sailor](https://pub.dev/packages/sailor) for routing.
 
-This project is a starting point for a Flutter application.
+## Backend API
 
-A few resources to get you started if this is your first Flutter project:
+The app uses APIs developed using Nestjs. You can find instructions on how to setup the backend [here](https://github.com/mrossioliveira/nestjs-tasks).
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
+For help getting started with Flutter, view the
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
